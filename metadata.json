@@ -1,0 +1,6 @@
+{
+  "name": "Taskly",
+  "description": "Lista de tarefas moderna, minimalista e funcional com suporte completo aos temas claro, escuro e sistema.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
