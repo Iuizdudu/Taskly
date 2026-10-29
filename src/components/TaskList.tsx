@@ -1,4 +1,5 @@
 import React from 'react';
+import { AnimatePresence } from 'motion/react';
 import { Task, TaskFilter } from '../types/task';
 import { TaskItem } from './TaskItem';
 import { EmptyState } from './EmptyState';
@@ -29,14 +30,16 @@ export const TaskList: React.FC<TaskListProps> = ({
 
   return (
     <ul className="space-y-2.5" aria-label="Lista de tarefas">
-      {tasks.map((task) => (
-        <TaskItem
-          key={task.id}
-          task={task}
-          onToggle={onToggleTask}
-          onDelete={onDeleteTask}
-        />
-      ))}
+      <AnimatePresence mode="popLayout" initial={false}>
+        {tasks.map((task) => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            onToggle={onToggleTask}
+            onDelete={onDeleteTask}
+          />
+        ))}
+      </AnimatePresence>
     </ul>
   );
 };
