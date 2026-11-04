@@ -1,98 +1,160 @@
-import { motion } from 'motion/react';
-import { Header } from './components/Header';
-import { TaskForm } from './components/TaskForm';
-import { TaskStats } from './components/TaskStats';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { HeaderNav } from './components/HeaderNav';
+import { GreetingSection } from './components/GreetingSection';
+import { DailyFocusCard } from './components/DailyFocusCard';
 import { TaskFilters } from './components/TaskFilters';
 import { TaskList } from './components/TaskList';
+import { CalendarView } from './components/CalendarView';
+import { NavigationDrawer } from './components/NavigationDrawer';
+import { EditUserModal } from './components/EditUserModal';
+import { NewTaskModal } from './components/NewTaskModal';
+import { FloatingActionButton } from './components/FloatingActionButton';
 import { useTheme } from './hooks/useTheme';
 import { useTasks } from './hooks/useTasks';
+import { useUser } from './hooks/useUser';
+import { AppView } from './types/task';
+import { getTodayDateString } from './utils/date';
 
 export default function App() {
   const { preference, appliedTheme, changeThemePreference } = useTheme();
+  const { userName, userAvatar, updateUserName, updateUserAvatar } = useUser();
   const {
     tasks,
     filteredTasks,
     activeFilter,
     setActiveFilter,
+    selectedCalendarDate,
+    setSelectedCalendarDate,
+    tasksCountByDate,
     addTask,
     toggleTask,
     deleteTask,
     stats,
   } = useTasks();
 
+  // Estados de navegação e modais
+  const [currentView, setCurrentView] = useState<AppView>('home');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+
+  const toggleView = () => {
+    setCurrentView((prev) => (prev === 'home' ? 'calendar' : 'home'));
+  };
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0E11] text-slate-900 dark:text-[#F3F4F6] transition-colors duration-200">
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        {/* 1. Cabeçalho */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <Header
-            preference={preference}
-            appliedTheme={appliedTheme}
-            onSelectPreference={changeThemePreference}
-          />
-        </motion.div>
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#0D0E11] text-slate-900 dark:text-[#F3F4F6] transition-colors duration-200">
+      <main className="max-w-xl mx-auto px-4 sm:px-6 pt-4 pb-12">
+        {/* Barra Superior Minimalista (Menu | Título | Atalho de Visão) */}
+        <HeaderNav
+          currentView={currentView}
+          onToggleView={toggleView}
+          onOpenDrawer={() => setIsDrawerOpen(true)}
+        />
 
-        {/* 2. Campo de Criação de Tarefas */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <TaskForm onAddTask={addTask} />
-        </motion.div>
+        {/* Transição Suave entre Telas (Home vs Calendário) */}
+        <AnimatePresence mode="wait">
+          {currentView === 'home' ? (
+            <motion.div
+              key="home-view"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Saudação Personalizada com Avatar Interativo e Upload */}
+              <GreetingSection
+                userName={userName}
+                userAvatar={userAvatar}
+                pendingCount={stats.pending}
+                onOpenProfile={() => setIsEditUserModalOpen(true)}
+              />
 
-        {/* 3. Indicadores de Métricas Reais */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <TaskStats stats={stats} />
-        </motion.div>
+              {/* Novo Card Principal Coeso: "Progresso & Foco Diário" (Things 3 / Linear / Apple Design) */}
+              <DailyFocusCard
+                stats={stats}
+                onAddTask={(title) => addTask(title, getTodayDateString())}
+              />
 
-        {/* 4. Filtros de Tarefas */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <TaskFilters
-            activeFilter={activeFilter}
-            onSelectFilter={setActiveFilter}
-            stats={stats}
-          />
-        </motion.div>
+              {/* Abas Discretas com Sliding Pill: A Fazer | Concluídas | Todas */}
+              <TaskFilters
+                activeFilter={activeFilter}
+                onSelectFilter={setActiveFilter}
+                stats={stats}
+              />
 
-        {/* 5. Lista de Tarefas ou Estado Vazio */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <TaskList
-            tasks={filteredTasks}
-            totalTasksCount={tasks.length}
-            activeFilter={activeFilter}
-            onToggleTask={toggleTask}
-            onDeleteTask={deleteTask}
-          />
-        </motion.div>
-
-        {/* Rodapé discreto */}
-        <motion.footer
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.35 }}
-          className="mt-12 pt-6 border-t border-slate-200/60 dark:border-white/5 text-center text-xs text-slate-500 dark:text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2"
-        >
-          <span>Taskly &bull; Foco e produtividade</span>
-          <span>Dados salvos localmente no seu navegador</span>
-        </motion.footer>
+              {/* Lista de Tarefas Individuais Elevadas */}
+              <TaskList
+                tasks={filteredTasks}
+                totalTasksCount={tasks.length}
+                activeFilter={activeFilter}
+                onToggleTask={toggleTask}
+                onDeleteTask={deleteTask}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="calendar-view"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Tela de Calendário */}
+              <CalendarView
+                tasks={tasks}
+                selectedDate={selectedCalendarDate}
+                onSelectDate={setSelectedCalendarDate}
+                onToggleTask={toggleTask}
+                onDeleteTask={deleteTask}
+                tasksCountByDate={tasksCountByDate}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
+
+      {/* Botão de Ação Flutuante (FAB) Preto no Canto Inferior Direito */}
+      <FloatingActionButton
+        onClick={() => setIsNewTaskModalOpen(true)}
+        label="Adicionar nova tarefa"
+      />
+
+      {/* Drawer / Sidebar Lateral com Perfil e Temas */}
+      <NavigationDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        currentView={currentView}
+        onSelectView={setCurrentView}
+        userName={userName}
+        userAvatar={userAvatar}
+        onOpenProfile={() => setIsEditUserModalOpen(true)}
+        preference={preference}
+        appliedTheme={appliedTheme}
+        onSelectTheme={changeThemePreference}
+        stats={stats}
+      />
+
+      {/* Modal para Personalizar Nome e Foto de Perfil Localmente */}
+      <EditUserModal
+        isOpen={isEditUserModalOpen}
+        onClose={() => setIsEditUserModalOpen(false)}
+        currentName={userName}
+        currentAvatar={userAvatar}
+        onSaveName={updateUserName}
+        onSaveAvatar={updateUserAvatar}
+      />
+
+      {/* Modal para Criar Nova Tarefa com Data */}
+      <NewTaskModal
+        isOpen={isNewTaskModalOpen}
+        onClose={() => setIsNewTaskModalOpen(false)}
+        onAddTask={addTask}
+        defaultDueDate={
+          currentView === 'calendar' ? selectedCalendarDate : getTodayDateString()
+        }
+      />
     </div>
   );
 }

@@ -29,7 +29,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   }
 
   return (
-    <ul className="space-y-2.5" aria-label="Lista de tarefas">
+    <ul className="space-y-3.5 pb-24" aria-label="Lista de tarefas">
       <AnimatePresence mode="popLayout" initial={false}>
         {tasks.map((task) => (
           <TaskItem

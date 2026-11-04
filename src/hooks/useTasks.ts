@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Task, TaskFilter, TaskStatsData } from '../types/task';
+import { getTodayDateString } from '../utils/date';
 
 const TASKS_STORAGE_KEY = 'taskly_tasks_data';
 
@@ -14,27 +15,94 @@ function generateTaskId(): string {
 }
 
 /**
+ * Normaliza tarefas legadas adicionando dueDate caso não exista
+ */
+function normalizeTask(raw: Partial<Task>): Task {
+  const createdAt = raw.createdAt || Date.now();
+  let dueDate = raw.dueDate;
+  if (!dueDate) {
+    const d = new Date(createdAt);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    dueDate = `${y}-${m}-${day}`;
+  }
+
+  return {
+    id: raw.id || generateTaskId(),
+    title: raw.title || 'Tarefa sem título',
+    completed: Boolean(raw.completed),
+    createdAt,
+    dueDate,
+  };
+}
+
+/**
+ * Tarefas iniciais de exemplo na primeiríssima execução
+ */
+function getInitialSampleTasks(): Task[] {
+  const today = getTodayDateString();
+  const dTomorrow = new Date();
+  dTomorrow.setDate(dTomorrow.getDate() + 1);
+  const tomorrowStr = `${dTomorrow.getFullYear()}-${String(dTomorrow.getMonth() + 1).padStart(2, '0')}-${String(dTomorrow.getDate()).padStart(2, '0')}`;
+
+  const dDayAfter = new Date();
+  dDayAfter.setDate(dDayAfter.getDate() + 2);
+  const dayAfterStr = `${dDayAfter.getFullYear()}-${String(dDayAfter.getMonth() + 1).padStart(2, '0')}-${String(dDayAfter.getDate()).padStart(2, '0')}`;
+
+  return [
+    {
+      id: generateTaskId(),
+      title: 'Tarefa de Exemplo',
+      completed: false,
+      createdAt: Date.now() - 3600000,
+      dueDate: today,
+    },
+    {
+      id: generateTaskId(),
+      title: 'Estudar Programação',
+      completed: false,
+      createdAt: Date.now() - 7200000,
+      dueDate: tomorrowStr,
+    },
+    {
+      id: generateTaskId(),
+      title: 'Organizar prioridades da semana',
+      completed: false,
+      createdAt: Date.now() - 10800000,
+      dueDate: dayAfterStr,
+    },
+  ];
+}
+
+/**
  * Hook para gerenciar as tarefas do Taskly com persistência no LocalStorage.
  */
 export function useTasks() {
-  // Inicialização segura a partir do LocalStorage (vazio na primeira execução)
+  // Inicialização segura a partir do LocalStorage
   const [tasks, setTasks] = useState<Task[]>(() => {
     try {
       const stored = localStorage.getItem(TASKS_STORAGE_KEY);
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          return parsed;
+          return parsed.map(normalizeTask);
         }
+      } else {
+        // Se for a primeira visita do usuário, inicializa com tarefas de exemplo inspiradas no design
+        return getInitialSampleTasks();
       }
     } catch (error) {
       console.warn('Não foi possível ler as tarefas do LocalStorage:', error);
     }
-    return [];
+    return getInitialSampleTasks();
   });
 
-  // Filtro ativo atual
-  const [activeFilter, setActiveFilter] = useState<TaskFilter>('all');
+  // Filtro ativo atual ('all', 'pending', 'completed') - padrão: 'pending' (A FAZER)
+  const [activeFilter, setActiveFilter] = useState<TaskFilter>('pending');
+
+  // Data selecionada no calendário (padrão: hoje)
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string>(getTodayDateString());
 
   // Persiste as tarefas sempre que houver alteração
   useEffect(() => {
@@ -45,8 +113,8 @@ export function useTasks() {
     }
   }, [tasks]);
 
-  // Adiciona uma nova tarefa com validação
-  const addTask = useCallback((title: string): boolean => {
+  // Adiciona uma nova tarefa com validação e data de vencimento
+  const addTask = useCallback((title: string, customDueDate?: string): boolean => {
     const trimmed = title.trim();
     if (!trimmed) {
       return false;
@@ -57,6 +125,7 @@ export function useTasks() {
       title: trimmed,
       completed: false,
       createdAt: Date.now(),
+      dueDate: customDueDate || getTodayDateString(),
     };
 
     setTasks((prev) => [newTask, ...prev]);
@@ -77,7 +146,7 @@ export function useTasks() {
     setTasks((prev) => prev.filter((task) => task.id !== id));
   }, []);
 
-  // Tarefas filtradas de acordo com o filtro ativo
+  // Tarefas filtradas de acordo com o filtro ativo (A Fazer / Concluídas / Todas)
   const filteredTasks = useMemo(() => {
     switch (activeFilter) {
       case 'pending':
@@ -89,6 +158,22 @@ export function useTasks() {
         return tasks;
     }
   }, [tasks, activeFilter]);
+
+  // Tarefas filtradas pela data do calendário
+  const calendarTasks = useMemo(() => {
+    return tasks.filter((t) => t.dueDate === selectedCalendarDate);
+  }, [tasks, selectedCalendarDate]);
+
+  // Mapa de contagem de tarefas pendentes por data (YYYY-MM-DD -> número)
+  const tasksCountByDate = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const t of tasks) {
+      if (!t.completed && t.dueDate) {
+        counts[t.dueDate] = (counts[t.dueDate] || 0) + 1;
+      }
+    }
+    return counts;
+  }, [tasks]);
 
   // Estatísticas calculadas em tempo real
   const stats: TaskStatsData = useMemo(() => {
@@ -110,6 +195,10 @@ export function useTasks() {
     filteredTasks,
     activeFilter,
     setActiveFilter,
+    selectedCalendarDate,
+    setSelectedCalendarDate,
+    calendarTasks,
+    tasksCountByDate,
     addTask,
     toggleTask,
     deleteTask,

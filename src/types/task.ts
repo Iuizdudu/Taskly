@@ -6,12 +6,18 @@ export interface Task {
   title: string;
   completed: boolean;
   createdAt: number;
+  dueDate?: string; // Formato YYYY-MM-DD
 }
 
 /**
  * Filtros de visualização de tarefas
  */
 export type TaskFilter = 'all' | 'pending' | 'completed';
+
+/**
+ * Visualizações principais da aplicação
+ */
+export type AppView = 'home' | 'calendar';
 
 /**
  * Estatísticas calculadas das tarefas
