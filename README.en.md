@@ -47,6 +47,7 @@
 
 <a href="#about"><kbd> <br> About <br> </kbd></a>&ensp;&ensp;
 <a href="#features"><kbd> <br> Features <br> </kbd></a>&ensp;&ensp;
+<a href="#security"><kbd> <br> Security <br> </kbd></a>&ensp;&ensp;
 <a href="#themes"><kbd> <br> Themes <br> </kbd></a>&ensp;&ensp;
 <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
 <a href="#motion"><kbd> <br> Motion <br> </kbd></a>&ensp;&ensp;
@@ -62,9 +63,9 @@
 <a id="about"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=ABOUT+THE+PROJECT" width="500"/>
 
-A complete, minimalist and highly refined **Modern Todo List Web Application**, inspired by Google Stitch *Clarity Productivity* and *Obsidian Precision* designs.
+A complete, minimalist and highly refined **Modern Todo List Web Application**, inspired by the design aesthetics of *Linear*, *Things 3*, and *Apple Human Interface Guidelines*.
 
-**Taskly** is built with zero-friction ergonomics, instant performance, and strict privacy in mind: all task data and theme preferences are stored locally in the browser's **LocalStorage**, requiring no logins, accounts, or remote database connections.
+**Taskly** is built with zero-friction ergonomics, instant performance, and strict privacy in mind: all task data, local profile, and theme preferences are stored safely in the browser's **LocalStorage**, requiring no logins, passwords, or remote database connections.
 
 > [!NOTE]
 > **Note:** Built for seamless responsive use across desktop, tablet, and mobile displays, with no horizontal scroll and comfortable touch targets.
@@ -86,11 +87,39 @@ A complete, minimalist and highly refined **Modern Todo List Web Application**, 
 
 | Feature | Icon | Key Highlights |
 | :--- | :---: | :--- |
-| **Task Creation** | ➕ | Adaptive placeholder, trim validation against empty tasks, spring button microinteraction and success feedback. |
-| **Real-time Indicators** | 📊 | Three dynamic counters (**Total**, **Pending**, **Completed**) with tabular figures (`tabular-nums`) and progress bar. |
-| **Functional Filters** | 🔍 | Instant switching between **All**, **Pending**, and **Completed** with smooth sliding active pill indicator. |
-| **Interactive List** | ✅ | 20px circular checkbox, animated horizontal strikethrough line on completion, and delete button with warning hover. |
-| **Local Persistence** | 💾 | Automatic synchronization with `localStorage`, preserving your data across page reloads. |
+| **Daily Focus Card** | 🎯 | Cohesive surface with `20px` border radius, fluid progress bar (`cubic-bezier(0.16, 1, 0.3, 1)`), inline metric pills, and quick floating input. |
+| **Local Profile & Photo** | 👤 | Customizable username (max 25 characters) and secure device photo upload with canvas sanitization and initials fallback. |
+| **Weekly Calendar View** | 📅 | 7-day week picker, date task indicators, and dynamic task filtering for any selected day. |
+| **Sliding Pill Filters** | 🔍 | Instant switching between **To Do**, **Done**, and **All** with spring-animated sliding background pill. |
+| **Interactive Tasks** | ✅ | Soft squircle checkbox, animated text strikethrough with micro-scale typography, and subtle delete action. |
+| **Navigation Drawer** | 📑 | Quick sidebar access to switch views (Home / Calendar), edit profile & photo, review metrics, and pick themes. |
+| **Complete Local Persistence** | 💾 | Automatic synchronization with `localStorage`, preserving tasks, profile, and theme preferences between sessions. |
+
+<div align="right">
+  <br>
+  <a href="#top"><kbd> <br> 🡅 Top <br> </kbd></a>
+</div>
+
+<br>
+
+---
+
+<a id="security"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=CLIENT-SIDE+SECURITY" width="500"/>
+
+Taskly enforces strict **Client-Side Web Security** principles:
+
+1. **Stored XSS Prevention & Input Sanitization**:
+   - Strict username length capped at **25 characters** (`maxLength: 25`).
+   - Automated removal of newline characters (`\r`, `\n`), tabs, and HTML markup before saving.
+   - Declarative text rendering via pure JSX (zero `dangerouslySetInnerHTML`).
+2. **Debounced Writes (400ms)**:
+   - Real-time name changes use debounced timers to avoid unnecessary disk writes.
+3. **HTML5 Canvas Avatar Sanitization Pipeline**:
+   - **File Size Limit**: Strictly blocks files larger than **2 MB**.
+   - **Decode Trap**: Verifies images through `new Image()` with error handling in `onerror` to neutralize polyglot exploits and corrupted files.
+   - **Isolated Redraw**: Redrawn on an offscreen `<canvas>` resized to a maximum of **256×256 pixels**.
+   - **Clean Export**: Re-encoded as `image/jpeg` at 85% quality, discarding malicious EXIF metadata and keeping storage lightweight (~15–25 KB) to prevent quota exhaustion.
 
 <div align="right">
   <br>
@@ -104,20 +133,17 @@ A complete, minimalist and highly refined **Modern Todo List Web Application**, 
 <a id="themes"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=THEME+SYSTEM" width="500"/>
 
-Switch with a single click between three comprehensive appearance modes:
+Switch seamlessly between three visual themes with one click:
 
 <div align="center">
   <table><tr><td>
 
-[![Light-Theme](https://placehold.co/180x36/f8fafc/0f172a?text=☀️+Light&font=Oswald)](#themes)
-[![Dark-Theme](https://placehold.co/180x36/0d0e11/f3f4f6?text=🌙+Dark&font=Oswald)](#themes)
-[![System-Theme](https://placehold.co/180x36/22252c/c0c1ff?text=💻+System+(Auto)&font=Oswald)](#themes)
+[![Theme-Light](https://placehold.co/180x36/f8fafc/0f172a?text=☀️+Light&font=Oswald)](#themes)
+[![Theme-Dark](https://placehold.co/180x36/0d0e11/f3f4f6?text=🌙+Dark&font=Oswald)](#themes)
+[![Theme-System](https://placehold.co/180x36/22252c/c0c1ff?text=💻+System+(Auto)&font=Oswald)](#themes)
 
   </td></tr></table>
 </div>
-
-> [!TIP]
-> **Tip - System Mode:** When **System** is active, changes in your operating system's color scheme are reflected in real time without refreshing.
 
 <div align="right">
   <br>
@@ -131,17 +157,19 @@ Switch with a single click between three comprehensive appearance modes:
 <a id="installation"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=INSTALLATION" width="500"/>
 
+To run Taskly locally:
+
 ```bash
-# 1. Clone repository
+# 1. Clone the repository
 git clone https://github.com/your-username/taskly.git
 
-# 2. Enter directory
+# 2. Open the project folder
 cd taskly
 
 # 3. Install dependencies
 npm install
 
-# 4. Start local development server
+# 4. Start the dev server
 npm run dev
 ```
 
@@ -157,10 +185,10 @@ npm run dev
 <a id="motion"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=MOTION+DESIGN" width="500"/>
 
-1. **Staggered Entry**: Clean sequential fade-in (~400–500 ms) upon page load.
-2. **Tactile Microinteractions**: Spring press feedback on buttons (`whileTap: 0.95`), animated strikethrough line on task completion.
-3. **Smooth Reordering**: Fluid entry and exit with `AnimatePresence` and height collapse.
-4. **Reduced Motion**: Automatically honors `prefers-reduced-motion: reduce`.
+1. **Fluid Screen Transitions**: Animated view change between Home and Calendar views.
+2. **Spring Sliding Pills**: Natural active indicator movement powered by spring physics (`layoutId`).
+3. **Tactile Microinteractions**: Checkbox scale on tap, strikethrough transition, and FAB elevation.
+4. **List Transitions**: Animated insertion and deletion via `AnimatePresence`.
 
 <div align="right">
   <br>
@@ -194,9 +222,9 @@ docker run -d -p 8080:80 --name taskly_app taskly
 <a id="vercel"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=VERCEL+DEPLOY" width="500"/>
 
-1. Push your code to GitHub.
-2. Import project in [Vercel](https://vercel.com).
-3. `vercel.json` and `.npmrc` handle the build automatically.
+1. Push code to your GitHub repository.
+2. Connect the repository in your [Vercel Dashboard](https://vercel.com).
+3. The `.npmrc` and `vercel.json` handle everything automatically.
 4. Click **Deploy**.
 
 <div align="right">
@@ -209,5 +237,5 @@ docker run -d -p 8080:80 --name taskly_app taskly
 ---
 
 <div align="center">
-  <sub>Built for productivity, focus, and visual craft. Licensed under Apache 2.0.</sub>
+  <sub>Built with focus on productivity, minimalism, and executive visual polish. Licensed under Apache 2.0.</sub>
 </div>

@@ -47,6 +47,7 @@
 
 <a href="#sobre"><kbd> <br> Sobre <br> </kbd></a>&ensp;&ensp;
 <a href="#recursos"><kbd> <br> Recursos <br> </kbd></a>&ensp;&ensp;
+<a href="#seguranca"><kbd> <br> Segurança <br> </kbd></a>&ensp;&ensp;
 <a href="#temas"><kbd> <br> Temas <br> </kbd></a>&ensp;&ensp;
 <a href="#instalacao"><kbd> <br> Instalação <br> </kbd></a>&ensp;&ensp;
 <a href="#motion"><kbd> <br> Motion <br> </kbd></a>&ensp;&ensp;
@@ -62,9 +63,9 @@
 <a id="sobre"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=SOBRE+O+PROJETO" width="500"/>
 
-Uma aplicação web completa, minimalista e altamente refinada de **Lista de Tarefas Moderna**, desenvolvida com estética profissional inspirada nos designs *Clarity Productivity* e *Obsidian Precision* do Google Stitch.
+Uma aplicação web completa, minimalista e altamente refinada de **Lista de Tarefas Moderna**, desenvolvida com estética profissional inspirada nos ecossistemas de design *Linear*, *Things 3* e *Apple Human Interface Guidelines*.
 
-O **Taskly** foi arquitetado com foco em ergonomia de uso, desempenho instantâneo e total privacidade: todos os dados e preferências de aparência são persistidos com segurança no **LocalStorage** do próprio navegador, sem exigir cadastros, logins ou conexões com bancos de dados externos.
+O **Taskly** foi arquitetado com foco em ergonomia de uso, desempenho instantâneo e total privacidade: todos os dados, tarefas, perfil local e preferências de aparência são persistidos com segurança no **LocalStorage** do próprio navegador, sem exigir cadastros, senhas ou conexões com bancos de dados externos.
 
 > [!NOTE]
 > **Nota:** Esta aplicação foi construída com foco em **fricção zero e fluidez de navegação**: interface responsiva e adaptada para computadores, tablets e dispositivos móveis, sem rolagem horizontal indevida e com áreas de clique confortáveis.
@@ -88,17 +89,45 @@ O aplicativo oferece um conjunto robusto de funcionalidades essenciais para orga
 
 | Recurso | Ícone | Principais Características |
 | :--- | :---: | :--- |
-| **Criação de Tarefas** | ➕ | Campo inteligente com placeholder adaptativo, validação contra tarefas vazias ou só espaços, botão com microinteração elástica e confirmação de sucesso. |
-| **Indicadores em Tempo Real** | 📊 | Três contadores dinâmicos (**Total**, **Pendentes** e **Concluídas**) com tipografia tabular (`tabular-nums`) e barra de progresso percentual fluida. |
-| **Filtros Funcionais** | 🔍 | Alternância instantânea entre **Todas**, **Pendentes** e **Concluídas** com pílula de seleção animada que desliza suavemente entre as opções. |
-| **Lista Interativa** | ✅ | Checkbox circular de 20px, tachado animado (*strikethrough*) suave na conclusão e botão de exclusão individual com transição para vermelho de alerta. |
-| **Persistência Local** | 💾 | Sincronização automática com `localStorage`, preservando suas tarefas e o tema escolhido mesmo após fechar ou recarregar a página. |
+| **Card de Foco Diário** | 🎯 | Superfície unificada com cantos arredondados (`20px`), barra de progresso suave (`cubic-bezier(0.16, 1, 0.3, 1)`), pílulas inline de métricas e input de criação rápida integrado. |
+| **Perfil Local & Foto** | 👤 | Nome personalizável (máx. 25 caracteres) e upload seguro de foto do dispositivo com pré-visualização, tratamento em canvas e fallback para iniciais. |
+| **Visão Calendário Semanal** | 📅 | Navegação por 7 dias da semana, marcadores numéricos de tarefas pendentes por data e filtragem dinâmica de compromissos por dia selecionado. |
+| **Filtros Funcionais Deslizantes** | 🔍 | Alternância instantânea entre **A Fazer**, **Concluídas** e **Todas** com fundo ativo em pílula deslizante (*Sliding Pill*) que se move organicamente via física de molas. |
+| **Lista Interativa de Tarefas** | ✅ | Checkbox *squircle* com toque macio, tachado de texto animado com micro-escala tipográfica e botão de exclusão discreto com confirmação visual. |
+| **Menu Lateral (Drawer)** | 📑 | Acesso rápido à alternância entre telas (Início / Calendário), edição do perfil do usuário, métricas resumidas e seletor de temas. |
+| **Persistência Local Total** | 💾 | Sincronização automática com `localStorage`, preservando tarefas, nome, avatar e o tema escolhido entre sessões sem dependência de internet. |
 
 > [!IMPORTANT]
-> **Importante:** Os filtros modificam unicamente a visualização em tela via computação em memória, sem excluir, mutar ou duplicar registros salvos.
+> **Importante:** Os filtros e seleções de data modificam a visualização em tela por computação pura em memória, sem mutar, sobrescrever ou duplicar registros persistidos.
 
 > [!WARNING]
-> **Aviso:** Na primeira execução, a aplicação inicia propositalmente limpa sem tarefas fictícias, exibindo uma tela vazia elegante com ilustração geométrica serena.
+> **Aviso:** Se nenhum nome for definido pelo usuário, o aplicativo adota suavemente a saudação **"Olá, Convidado!"**, permitindo edição imediata a qualquer momento.
+
+<div align="right">
+  <br>
+  <a href="#top"><kbd> <br> 🡅 Topo <br> </kbd></a>
+</div>
+
+<br>
+
+---
+
+<a id="seguranca"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=SEGURANCA+CLIENT-SIDE" width="500"/>
+
+O Taskly adota princípios rigorosos de **Segurança Web Client-Side** para garantir integridade, desempenho e privacidade absoluta dos dados:
+
+1. **Higienização e Proteção contra Stored XSS**:
+   - O nome do usuário possui limite rígido de **25 caracteres** (`maxLength: 25`).
+   - Remoção proativa de quebras de linha (`\r`, `\n`, `\t`), caracteres de controle e tags HTML antes do armazenamento.
+   - Renderização estritamente declarativa via JSX puro (zero uso de `dangerouslySetInnerHTML`).
+2. **Escrita com Debounce (400ms)**:
+   - Alterações contínuas no nome utilizam temporizador de debounce para evitar gravações excessivas e desnecessárias no armazenamento local.
+3. **Pipeline de Sanitização de Imagens via HTML5 Canvas**:
+   - **Limite de Arquivo**: Bloqueio rígido de arquivos maiores que **2 MB**.
+   - **Decodificação Segura**: Uso de `new Image()` com captura de erros em `onerror` para neutralizar ataques com arquivos corrompidos ou poliglotas.
+   - **Canvas Isolado**: Redesenho obrigatório em `<canvas>` com redimensionamento proporcional para no máximo **256×256 pixels**.
+   - **Exportação Limpa**: Reexportado como `image/jpeg` a 85%, descartando metadados EXIF maliciosos, neutralizando scripts embutidos e garantindo payloads ultraleves (~15–25 KB) para evitar esgotamento da cota do `localStorage`.
 
 <div align="right">
   <br>
@@ -112,7 +141,7 @@ O aplicativo oferece um conjunto robusto de funcionalidades essenciais para orga
 <a id="temas"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=SISTEMA+DE+TEMAS" width="500"/>
 
-Através do seletor triplo no canto superior direito, você alterna com um clique entre os três modos visuais completos:
+Através do seletor triplo no menu lateral ou nas preferências, você alterna com um clique entre os três modos visuais completos:
 
 <div align="center">
   <table><tr><td>
@@ -176,17 +205,18 @@ npm run dev
 <a id="motion"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=MOTION+DESIGN" width="500"/>
 
-A experiência visual do Taskly foi enriquecida com microinterações de alto padrão desenvolvidas com **Motion**:
+A experiência visual do Taskly foi enriquecida com microinterações de alto padrão desenvolvidas com **Motion (v12)**:
 
-1. **Entrada Coreografada (*Staggered Entry*)**: Os blocos da interface surgem em sequência suave (~400–500 ms) ao carregar a página: Cabeçalho $\rightarrow$ Formulário $\rightarrow$ Indicadores $\rightarrow$ Filtros $\rightarrow$ Lista.
-2. **Microinterações Táteis**:
-   - Botão de adicionar com compressão suave ao clique (`whileTap: 0.95`) e confirmação temporária de sucesso.
+1. **Transições Cinematográficas entre Telas**: Alternância suave com fade e deslocamento vertical sutil entre a **Tela Inicial** e o **Calendário Semanal**.
+2. **Pílulas Deslizantes com Física de Mola**: Fundo ativo com transição contínua via `layoutId` nos seletores de abas e filtros (`stiffness: 500, damping: 36`).
+3. **Microinterações Táteis**:
+   - Checkbox estilizado com rotação e escala elástica no ícone de confirmação.
+   - Linha de tachado com expansão fluida via `cubic-bezier(0.16, 1, 0.3, 1)` acompanhada de micro-escala no título.
    - Tremor discreto no campo em caso de submissão inválida.
-   - Linha de tachado animada na descrição da tarefa ao ser concluída.
-3. **Reorganização de Lista com `AnimatePresence`**:
+   - Botão de ação flutuante (FAB) com elevação no hover e compressão no clique.
+4. **Reorganização de Lista com `AnimatePresence`**:
    - Inclusão fluida com fade-in e escala.
    - Exclusão com recolhimento de altura suave, permitindo que os itens seguintes se reposicionem naturalmente sem piscar a interface.
-4. **Pílulas Deslizantes**: Fundo ativo com transição elástica contínua nos seletores de tema e abas de filtros (`layoutId`).
 
 > [!NOTE]
 > **Nota de Acessibilidade:** Todas as animações respeitam a preferência do usuário por movimento reduzido (`prefers-reduced-motion: reduce`), sendo simplificadas automaticamente.

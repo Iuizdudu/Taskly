@@ -47,6 +47,7 @@
 
 <a href="#sobre"><kbd> <br> Sobre <br> </kbd></a>&ensp;&ensp;
 <a href="#caracteristicas"><kbd> <br> Funciones <br> </kbd></a>&ensp;&ensp;
+<a href="#seguridad"><kbd> <br> Seguridad <br> </kbd></a>&ensp;&ensp;
 <a href="#temas"><kbd> <br> Temas <br> </kbd></a>&ensp;&ensp;
 <a href="#instalacion"><kbd> <br> Instalación <br> </kbd></a>&ensp;&ensp;
 <a href="#motion"><kbd> <br> Motion <br> </kbd></a>&ensp;&ensp;
@@ -62,9 +63,15 @@
 <a id="sobre"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=SOBRE+EL+PROYECTO" width="500"/>
 
-Una aplicación web completa, minimalista y refinada de **Lista de Tareas Moderna**, desarrollada con diseño profesional inspirado en *Clarity Productivity* y *Obsidian Precision* de Google Stitch.
+Una aplicación web completa, minimalista y refinada de **Lista de Tareas Moderna**, inspirada en los principios de diseño de *Linear*, *Things 3* y *Apple Human Interface Guidelines*.
 
-**Taskly** fue diseñado con ergonomía, velocidad y privacidad total: todos los datos y la configuración de tema se almacenan localmente en el **LocalStorage** del navegador, sin necesidad de registros, contraseñas ni bases de datos remotas.
+**Taskly** fue diseñado con ergonomía, velocidad y privacidad total: todos los datos, tareas, perfil local y preferencias de apariencia se almacenan de forma segura en el **LocalStorage** del navegador, sin necesidad de registros, contraseñas ni bases de datos remotas.
+
+> [!NOTE]
+> **Nota:** Desarrollado para uso fluido y responsivo en computadoras, tabletas y teléfonos móviles, sin desbordamiento horizontal y con áreas de toque confortables.
+
+> [!TIP]
+> **Consejo:** Atajos de teclado nativos: escribe tu tarea y pulsa <kbd>Enter</kbd> para agregarla de inmediato. Usa la tecla <kbd>Tab</kbd> para navegar accesiblemente entre entradas, filtros y tareas.
 
 <div align="right">
   <br>
@@ -78,13 +85,41 @@ Una aplicación web completa, minimalista y refinada de **Lista de Tareas Modern
 <a id="caracteristicas"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=CARACTERISTICAS" width="500"/>
 
-| Característica | Icono | Descripción |
+| Característica | Icono | Descripción Principal |
 | :--- | :---: | :--- |
-| **Creación de Tareas** | ➕ | Validación inteligente contra campos vacíos, soporte para tecla Enter y microinteracción elástica en el botón. |
-| **Indicadores en Tiempo Real** | 📊 | Tres contadores dinámicos (**Total**, **Pendientes**, **Completadas**) con formato numérico tabular (`tabular-nums`) y barra de progreso. |
-| **Filtros Funcionales** | 🔍 | Cambio instantáneo entre **Todas**, **Pendientes** y **Completadas** con pastilla deslizante animada. |
-| **Lista Interactiva** | ✅ | Checkbox circular de 20px, tachado animado suave al completar y botón de eliminar con tono de advertencia. |
-| **Persistencia Local** | 💾 | Sincronización automática con `localStorage`, manteniendo tus tareas guardadas entre recargas. |
+| **Card de Foco Diario** | 🎯 | Superficie con esquinas redondeadas (`20px`), barra de progreso fluida (`cubic-bezier(0.16, 1, 0.3, 1)`), pastillas de métricas e input flotante integrado. |
+| **Perfil Local y Foto** | 👤 | Nombre personalizable (máx. 25 caracteres) y subida segura de fotos con sanitización en canvas y fallback de iniciales. |
+| **Vista de Calendario Semanal** | 📅 | Navegador de 7 días, indicadores numéricos de tareas por fecha y filtrado dinámico para el día seleccionado. |
+| **Filtros Deslizantes** | 🔍 | Cambio instantáneo entre **Por Hacer**, **Completadas** y **Todas** con pastilla animada por física de resortes. |
+| **Lista Interactiva** | ✅ | Checkbox *squircle* con toque suave, tachado de texto animado con microescala y botón de eliminar discreto. |
+| **Panel Lateral (Drawer)** | 📑 | Navegación rápida entre Inicio y Calendario, edición de perfil/foto, métricas resumidas y selección de temas. |
+| **Persistencia Local Completa** | 💾 | Sincronización automática con `localStorage`, manteniendo tareas, perfil y temas entre sesiones. |
+
+<div align="right">
+  <br>
+  <a href="#top"><kbd> <br> 🡅 Arriba <br> </kbd></a>
+</div>
+
+<br>
+
+---
+
+<a id="seguridad"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=SEGURIDAD+CLIENT-SIDE" width="500"/>
+
+Taskly aplica rigurosos estándares de **Seguridad Web en el Cliente**:
+
+1. **Prevención de Stored XSS y Sanitización**:
+   - Nombre de usuario limitado a **25 caracteres** (`maxLength: 25`).
+   - Eliminación automática de saltos de línea (`\r`, `\n`, `\t`), caracteres de control y etiquetas HTML.
+   - Renderizado declarativo con JSX puro (sin `dangerouslySetInnerHTML`).
+2. **Escrituras con Debounce (400ms)**:
+   - Los cambios de nombre utilizan debounce para evitar escritas continuas e innecesarias en el almacenamiento local.
+3. **Pipeline de Sanitización de Avatares mediante HTML5 Canvas**:
+   - **Límite de Tamaño**: Rechazo estricto de archivos mayores a **2 MB**.
+   - **Trampa de Decodificación**: Validación con `new Image()` y control en `onerror` para neutralizar exploits políglotas o archivos dañados.
+   - **Redibujado Aislado**: Redimensionado automático en un `<canvas>` oculto a un máximo de **256×256 píxeles**.
+   - **Exportación Limpia**: Reexportado como `image/jpeg` al 85%, descartando metadatos EXIF maliciosos y manteniendo un peso mínimo (~15–25 KB) para evitar agotar el `localStorage`.
 
 <div align="right">
   <br>
@@ -98,11 +133,13 @@ Una aplicación web completa, minimalista y refinada de **Lista de Tareas Modern
 <a id="temas"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=SISTEMA+DE+TEMAS" width="500"/>
 
+Alterna fácilmente con un clic entre los tres modos disponibles:
+
 <div align="center">
   <table><tr><td>
 
-[![Tema-Claro](https://placehold.co/180x36/f8fafc/0f172a?text=☀️+Claro+(Light)&font=Oswald)](#temas)
-[![Tema-Oscuro](https://placehold.co/180x36/0d0e11/f3f4f6?text=🌙+Oscuro+(Dark)&font=Oswald)](#temas)
+[![Tema-Claro](https://placehold.co/180x36/f8fafc/0f172a?text=☀️+Claro&font=Oswald)](#temas)
+[![Tema-Oscuro](https://placehold.co/180x36/0d0e11/f3f4f6?text=🌙+Oscuro&font=Oswald)](#temas)
 [![Tema-Sistema](https://placehold.co/180x36/22252c/c0c1ff?text=💻+Sistema+(Auto)&font=Oswald)](#temas)
 
   </td></tr></table>
@@ -120,8 +157,10 @@ Una aplicación web completa, minimalista y refinada de **Lista de Tareas Modern
 <a id="instalacion"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=INSTALACION" width="500"/>
 
+Para ejecutar en tu computadora:
+
 ```bash
-# 1. Clonar repositorio
+# 1. Clonar el repositorio
 git clone https://github.com/tu-usuario/taskly.git
 
 # 2. Entrar en la carpeta
@@ -146,14 +185,14 @@ npm run dev
 <a id="motion"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=MOTION+DESIGN" width="500"/>
 
-1. **Entrada Coreografiada**: Secuencia fluida (~400–500 ms) al abrir la aplicación.
-2. **Microinteracciones Táctiles**: Pulsación elástica en botones (`whileTap: 0.95`), tachado animado horizontal en tareas completadas.
-3. **Reordenación con `AnimatePresence`**: Inclusión y eliminación con colapso de altura suave.
-4. **Accesibilidad**: Respeta automáticamente `prefers-reduced-motion: reduce`.
+1. **Transiciones entre Pantallas**: Cambio fluido con fade suave entre Inicio y Calendario.
+2. **Pastillas Deslizantes**: Animación fluida con física de resorte (`layoutId`).
+3. **Microinteracciones**: Efecto táctil en checkboxes, tachado elástico y elevación del botón flotante.
+4. **Listas con `AnimatePresence`**: Entrada y salida orgánica de tareas sin saltos visuales.
 
 <div align="right">
   <br>
-  <a href="#top"><kbd> <br> 🡅 Arriba <br> </kbd></a>
+  <a href="#top"><kbd> <br> 🡅 Top <br> </kbd></a>
 </div>
 
 <br>
@@ -164,10 +203,10 @@ npm run dev
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=DOCKER" width="500"/>
 
 ```bash
-# Construir imagen Docker
+# Construir la imagen Docker
 docker build -t taskly .
 
-# Ejecutar contenedor
+# Ejecutar el contenedor
 docker run -d -p 8080:80 --name taskly_app taskly
 ```
 
@@ -181,11 +220,11 @@ docker run -d -p 8080:80 --name taskly_app taskly
 ---
 
 <a id="vercel"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=DESPLIEGUE+VERCEL" width="500"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=24&pause=1000&color=4648D4&vCenter=true&width=500&height=28&lines=DEPLOY+VERCEL" width="500"/>
 
-1. Sube tu código a GitHub.
-2. Importa el proyecto en [Vercel](https://vercel.com).
-3. `vercel.json` y `.npmrc` configuran todo automáticamente.
+1. Sube el código a tu repositorio en GitHub.
+2. Vincula el proyecto en tu panel de [Vercel](https://vercel.com).
+3. Los archivos `.npmrc` y `vercel.json` configuran todo automáticamente.
 4. Pulsa **Deploy**.
 
 <div align="right">
@@ -198,5 +237,5 @@ docker run -d -p 8080:80 --name taskly_app taskly
 ---
 
 <div align="center">
-  <sub>Desarrollado con enfoque en productividad, minimalismo y calidad visual. Licenciado bajo Apache 2.0.</sub>
+  <sub>Desarrollado con enfoque en productividad, minimalismo y acabado visual de alto nivel. Licenciado bajo Apache 2.0.</sub>
 </div>
