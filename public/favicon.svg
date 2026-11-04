@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <!-- Filtro de sombra suave para garantir legibilidade impecável tanto em abas claras quanto escuras sem adicionar nenhuma borda ou caixa -->
+    <filter id="taskly-shadow" x="-30%" y="-30%" width="160%" height="160%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="6" stdDeviation="16" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Ícone de Tarefas Taskly: Apenas o traço geométrico de tarefa na cor branca -->
+  <path
+    d="M 96 264 L 204 372 L 416 148"
+    stroke="#FFFFFF"
+    stroke-width="58"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#taskly-shadow)"
+  />
+</svg>

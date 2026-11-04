@@ -63,9 +63,9 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               {/* Header do Drawer */}
               <div className="p-6 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-slate-900 dark:bg-indigo-600 flex items-center justify-center text-white shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white flex items-center justify-center shadow-xs transition-colors">
                     <svg
-                      className="w-4 h-4"
+                      className="w-4.5 h-4.5"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"

@@ -15,8 +15,8 @@
 <br>
 
 <div align="center">
-  <a href="https://i.ibb.co/7dWBtbB6/download.png" target="_blank" rel="noopener noreferrer">
-    <img src="https://i.ibb.co/7dWBtbB6/download.png" alt="Taskly Banner" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);" />
+  <a href="" target="_blank" rel="noopener noreferrer">
+    <img src="https://i.ibb.co/MxFFxBN9/b7ecfacc-960b-4413-9fa0-2c104307a800.jpg" alt="Taskly Banner" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);" />
   </a>
 </div>
 
