@@ -32,7 +32,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   stats,
 }) => {
   const getInitials = (name: string) => {
-    if (!name || name === 'Visitante') return 'V';
+    if (!name || name === 'Convidado' || name === 'Visitante') return 'C';
     const parts = name.trim().split(/\s+/);
     if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();

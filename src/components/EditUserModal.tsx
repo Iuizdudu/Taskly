@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, User, Check, Camera, Trash2, Upload } from 'lucide-react';
+import { X, User, Check, Camera, Trash2, Upload, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { fileToBase64Optimized } from '../utils/image';
+import {
+  sanitizeAvatarImage,
+  MAX_USER_NAME_LENGTH,
+  DEFAULT_USER_NAME,
+} from '../utils/security';
 
 interface EditUserModalProps {
   isOpen: boolean;
@@ -20,7 +24,10 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
   onSaveName,
   onSaveAvatar,
 }) => {
-  const [name, setName] = useState(currentName === 'Visitante' ? '' : currentName);
+  const isDefaultName = (n: string) =>
+    !n || n === DEFAULT_USER_NAME || n === 'Visitante';
+
+  const [name, setName] = useState(isDefaultName(currentName) ? '' : currentName);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(currentAvatar);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [imageError, setImageError] = useState('');
@@ -29,7 +36,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      setName(currentName === 'Visitante' ? '' : currentName);
+      setName(isDefaultName(currentName) ? '' : currentName);
       setAvatarPreview(currentAvatar);
       setImageError('');
       setTimeout(() => {
@@ -43,40 +50,55 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.match(/^image\/(png|jpeg|jpg|webp)$/i)) {
-      setImageError('Formato não suportado. Por favor, use PNG, JPG ou WEBP.');
-      return;
-    }
-
     try {
       setIsProcessingImage(true);
       setImageError('');
-      const base64 = await fileToBase64Optimized(file, 280, 0.85);
-      setAvatarPreview(base64);
+
+      // Validação profunda com decodificação no canvas para neutralizar XSS/EXIF/poliglotas
+      const result = await sanitizeAvatarImage(file);
+
+      if (!result.success || !result.dataUrl) {
+        setImageError(result.error || 'Falha ao processar a foto. Tente outra imagem.');
+        return;
+      }
+
+      setAvatarPreview(result.dataUrl);
     } catch (err) {
       console.error('Erro ao processar imagem:', err);
       setImageError('Falha ao processar a foto. Tente outra imagem.');
     } finally {
       setIsProcessingImage(false);
+      // Limpa o valor do input para permitir selecionar o mesmo ficheiro novamente se desejado
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
   const handleRemovePhoto = () => {
     setAvatarPreview(null);
+    setImageError('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Remove quebras de linha e limita rigidamente ao máximo de 25 caracteres
+    const rawVal = e.target.value.replace(/[\r\n\t]/g, '');
+    setName(rawVal.slice(0, MAX_USER_NAME_LENGTH));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSaveName(name.trim() || 'Visitante');
+    const finalName = name.trim() || DEFAULT_USER_NAME;
+    onSaveName(finalName);
     onSaveAvatar(avatarPreview);
     onClose();
   };
 
   const getInitials = (val: string) => {
-    if (!val || val === 'Visitante') return 'V';
+    if (!val || val === DEFAULT_USER_NAME || val === 'Visitante') return 'C';
     const parts = val.trim().split(/\s+/);
     if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
@@ -184,32 +206,44 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
                 </div>
 
                 {imageError && (
-                  <p className="mt-2 text-xs text-red-500 dark:text-red-400">
-                    {imageError}
-                  </p>
+                  <div className="mt-2.5 px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/30 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{imageError}</span>
+                  </div>
                 )}
               </div>
 
-              {/* Seção de Nome */}
+              {/* Seção de Nome com Limite Rígido de 25 caracteres e Contador */}
               <div>
-                <label
-                  htmlFor="user-name-input"
-                  className="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5"
-                >
-                  Seu nome ou apelido
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label
+                    htmlFor="user-name-input"
+                    className="block text-xs font-semibold text-slate-700 dark:text-gray-300"
+                  >
+                    Seu nome ou apelido
+                  </label>
+                  <span
+                    className={`text-[11px] font-mono font-medium ${
+                      name.length >= MAX_USER_NAME_LENGTH
+                        ? 'text-amber-600 dark:text-amber-400 font-bold'
+                        : 'text-slate-400 dark:text-gray-500'
+                    }`}
+                  >
+                    {name.length}/{MAX_USER_NAME_LENGTH}
+                  </span>
+                </div>
                 <input
                   id="user-name-input"
                   ref={inputRef}
                   type="text"
-                  maxLength={30}
+                  maxLength={MAX_USER_NAME_LENGTH}
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Eduardo, Hideki, Maria..."
+                  onChange={handleNameChange}
+                  placeholder={`Ex: Eduardo, Hideki, Sofia...`}
                   className="w-full h-11 px-3.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-indigo-500/20 focus:border-slate-900 dark:focus:border-indigo-500 transition-all font-medium"
                 />
                 <p className="mt-1 text-[11px] text-slate-400 dark:text-gray-500">
-                  Deixe em branco para usar o padrão &ldquo;Visitante&rdquo;.
+                  Deixe vazio para usar o padrão &ldquo;{DEFAULT_USER_NAME}&rdquo; (máx. {MAX_USER_NAME_LENGTH} caracteres).
                 </p>
               </div>
 
