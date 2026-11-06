@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { Reorder } from 'motion/react';
 import { Task } from '../types/task';
 import { TaskItem } from './TaskItem';
 import { getWeekDays, formatMonthYear, getTodayDateString } from '../utils/date';
-import { Calendar as CalendarIcon, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 interface CalendarViewProps {
   tasks: Task[];
@@ -11,6 +11,9 @@ interface CalendarViewProps {
   onSelectDate: (date: string) => void;
   onToggleTask: (id: string) => void;
   onDeleteTask: (id: string) => void;
+  onEditTask: (id: string, newTitle: string) => boolean;
+  onReorderCalendarTasks?: (newOrder: Task[], date: string) => void;
+  onMoveCalendarTask?: (id: string, direction: 'up' | 'down', date: string) => void;
   tasksCountByDate: Record<string, number>;
 }
 
@@ -20,6 +23,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   onSelectDate,
   onToggleTask,
   onDeleteTask,
+  onEditTask,
+  onReorderCalendarTasks,
+  onMoveCalendarTask,
   tasksCountByDate,
 }) => {
   // Converte selectedDate em objeto Date para cálculo da semana e mês
@@ -126,18 +132,27 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </p>
           </div>
         ) : (
-          <ul className="space-y-3">
-            <AnimatePresence mode="popLayout" initial={false}>
-              {tasksForSelectedDate.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onToggle={onToggleTask}
-                  onDelete={onDeleteTask}
-                />
-              ))}
-            </AnimatePresence>
-          </ul>
+          <Reorder.Group
+            axis="y"
+            values={tasksForSelectedDate}
+            onReorder={(newOrder) => onReorderCalendarTasks?.(newOrder, selectedDate)}
+            className="space-y-3"
+            aria-label="Lista de tarefas da data selecionada"
+          >
+            {tasksForSelectedDate.map((task, index) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                onToggle={onToggleTask}
+                onDelete={onDeleteTask}
+                onEdit={onEditTask}
+                onMoveUp={(id) => onMoveCalendarTask?.(id, 'up', selectedDate)}
+                onMoveDown={(id) => onMoveCalendarTask?.(id, 'down', selectedDate)}
+                isFirst={index === 0}
+                isLast={index === tasksForSelectedDate.length - 1}
+              />
+            ))}
+          </Reorder.Group>
         )}
       </div>
     </div>

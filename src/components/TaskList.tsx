@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnimatePresence } from 'motion/react';
+import { Reorder } from 'motion/react';
 import { Task, TaskFilter } from '../types/task';
 import { TaskItem } from './TaskItem';
 import { EmptyState } from './EmptyState';
@@ -10,6 +10,9 @@ interface TaskListProps {
   activeFilter: TaskFilter;
   onToggleTask: (id: string) => void;
   onDeleteTask: (id: string) => void;
+  onEditTask: (id: string, newTitle: string) => boolean;
+  onReorderTasks: (newTasks: Task[]) => void;
+  onMoveTask?: (id: string, direction: 'up' | 'down') => void;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -18,6 +21,9 @@ export const TaskList: React.FC<TaskListProps> = ({
   activeFilter,
   onToggleTask,
   onDeleteTask,
+  onEditTask,
+  onReorderTasks,
+  onMoveTask,
 }) => {
   if (tasks.length === 0) {
     return (
@@ -29,17 +35,26 @@ export const TaskList: React.FC<TaskListProps> = ({
   }
 
   return (
-    <ul className="space-y-3.5 pb-24" aria-label="Lista de tarefas">
-      <AnimatePresence mode="popLayout" initial={false}>
-        {tasks.map((task) => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            onToggle={onToggleTask}
-            onDelete={onDeleteTask}
-          />
-        ))}
-      </AnimatePresence>
-    </ul>
+    <Reorder.Group
+      axis="y"
+      values={tasks}
+      onReorder={onReorderTasks}
+      className="space-y-3.5 pb-24"
+      aria-label="Lista de tarefas reordenáveis"
+    >
+      {tasks.map((task, index) => (
+        <TaskItem
+          key={task.id}
+          task={task}
+          onToggle={onToggleTask}
+          onDelete={onDeleteTask}
+          onEdit={onEditTask}
+          onMoveUp={(id) => onMoveTask?.(id, 'up')}
+          onMoveDown={(id) => onMoveTask?.(id, 'down')}
+          isFirst={index === 0}
+          isLast={index === tasks.length - 1}
+        />
+      ))}
+    </Reorder.Group>
   );
 };

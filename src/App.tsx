@@ -28,8 +28,13 @@ export default function App() {
     setSelectedCalendarDate,
     tasksCountByDate,
     addTask,
+    editTask,
     toggleTask,
     deleteTask,
+    reorderTasks,
+    reorderCalendarTasks,
+    moveTask,
+    moveCalendarTask,
     stats,
   } = useTasks();
 
@@ -84,13 +89,16 @@ export default function App() {
                 stats={stats}
               />
 
-              {/* Lista de Tarefas Individuais Elevadas */}
+              {/* Lista de Tarefas Individuais Elevadas com Drag and Drop e Edição */}
               <TaskList
                 tasks={filteredTasks}
                 totalTasksCount={tasks.length}
                 activeFilter={activeFilter}
                 onToggleTask={toggleTask}
                 onDeleteTask={deleteTask}
+                onEditTask={editTask}
+                onReorderTasks={reorderTasks}
+                onMoveTask={moveTask}
               />
             </motion.div>
           ) : (
@@ -101,13 +109,16 @@ export default function App() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* Tela de Calendário */}
+              {/* Tela de Calendário com Edição e Reordenação por Data */}
               <CalendarView
                 tasks={tasks}
                 selectedDate={selectedCalendarDate}
                 onSelectDate={setSelectedCalendarDate}
                 onToggleTask={toggleTask}
                 onDeleteTask={deleteTask}
+                onEditTask={editTask}
+                onReorderCalendarTasks={reorderCalendarTasks}
+                onMoveCalendarTask={moveCalendarTask}
                 tasksCountByDate={tasksCountByDate}
               />
             </motion.div>
